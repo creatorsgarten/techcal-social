@@ -3,13 +3,16 @@
   "dependencies": {
     "@(-.-)/env": "^0.3.2",
     "axios": "^1.4.0",
+    "hast-util-from-html": "^2.0.1",
+    "hast-util-to-text": "^4.0.0",
     "tsx": "^3.12.7",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.0",
     "@types/node": "18.x",
-    "puppeteer-core": "^21.0.3"
+    "puppeteer-core": "^21.0.3",
+    "vitest": "^0.34.1"
   },
   "scripts": {
     "cli": "tsx src/cli.ts"

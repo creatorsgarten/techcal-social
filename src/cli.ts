@@ -1,10 +1,10 @@
 import { parseArgs } from "util";
-import axios from "axios";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import type { Page } from "puppeteer-core";
-import { getEvents, getEvent } from "./calendar";
+import { getEvents } from "./calendar";
 import { createHash } from "crypto";
 import { GoogleCalendarItem } from "./types";
+import { preparePost } from "./preparePost";
+import { prepareImage } from "./prepareImage";
 
 const { values } = parseArgs({
   options: {
@@ -35,21 +35,6 @@ function shouldSkip(item: GoogleCalendarItem) {
   return false;
 }
 
-async function preparePost(eventId: string) {
-  const event = await getEvent(eventId);
-  const yearAndMonth = (
-    "dateTime" in event.start ? event.start.dateTime : event.start.date
-  ).slice(0, 7);
-  const screenshotUrl = `https://th.techcal.dev/?${new URLSearchParams({
-    month: yearAndMonth,
-    capture: eventId,
-  })}`;
-  return {
-    eventId,
-    screenshotUrl,
-  };
-}
-
 if (values["list-events"]) {
   const calendar = await getEvents();
   const out: {
@@ -77,7 +62,9 @@ if (values["list-events"]) {
 } else if (values["prepare-post"]) {
   const eventId = values["prepare-post"];
   const post = await preparePost(eventId);
-  console.log(post);
+  console.log("-".repeat(80));
+  console.log(post.text);
+  console.log("-".repeat(80));
 
   mkdirSync(".data", { recursive: true });
   writeFileSync(".data/post.json", JSON.stringify(post, null, 2));
@@ -94,29 +81,4 @@ if (values["list-events"]) {
   const targetUrl = values["capture-url"];
   const outPath = await prepareImage(targetUrl);
   console.log(outPath);
-}
-
-async function prepareImage(targetUrl: string) {
-  const options = { targetUrl };
-  const code = `(${async (page: Page, { targetUrl }: typeof options) => {
-    await page.setViewport({ width: 1200, height: 1200, deviceScaleFactor: 2 });
-
-    await page.goto(targetUrl);
-    await page.waitForSelector(".eventItem");
-    await page.waitForSelector("#capture-title");
-    await page.waitForSelector("#capture-stage");
-
-    // Capture the portion of #capture-stage
-    const element = await page.$("#capture-stage");
-    return await element!.screenshot({ type: "png" });
-  }})(page, ${JSON.stringify(options)})`;
-  const { data } = await axios.post(
-    "http://localhost:20279/run",
-    { code },
-    { timeout: 60000, responseType: "arraybuffer" }
-  );
-  mkdirSync(".data", { recursive: true });
-  const outPath = ".data/post.png";
-  writeFileSync(outPath, data);
-  return outPath;
 }
