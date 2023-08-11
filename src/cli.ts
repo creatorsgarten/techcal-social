@@ -16,9 +16,19 @@ import { Env } from "@(-.-)/env";
 import { z } from "zod";
 import axios from "axios";
 
-const env = Env(
+const envFacebook = Env(
   z.object({
     FACEBOOK_PAGE_ACCESS_TOKEN: z.string(),
+  })
+);
+const envDiscord = Env(
+  z.object({
+    DISCORD_WEBHOOK_URL: z
+      .string()
+      .describe("https://discord.com/api/webhooks/…/…?thread_id=…&wait=true"),
+    DISCORD_STATE_URL: z
+      .string()
+      .describe("https://….firebaseio.com/discord/state.json?auth=…"),
   })
 );
 
@@ -30,6 +40,7 @@ const { values } = parseArgs({
     "prepare-image": { type: "boolean" },
     post: { type: "boolean" },
     comment: { type: "boolean" },
+    "preview-on-discord": { type: "boolean" },
 
     // Dev actions
     "capture-url": { type: "string" },
@@ -164,7 +175,7 @@ if (values["list-events"]) {
 } else if (values["post"]) {
   const post = getUpcomingPost();
   await updateState(post.eventId, "post", async () => {
-    const accessToken = env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const accessToken = envFacebook.FACEBOOK_PAGE_ACCESS_TOKEN;
     const image = readFileSync(getImageFilePath(post.eventId));
     const formData = new FormData();
     formData.append("access_token", accessToken);
@@ -189,7 +200,7 @@ if (values["list-events"]) {
 } else if (values["comment"]) {
   const post = getUpcomingPost();
   await updateState(post.eventId, "comment", async () => {
-    const accessToken = env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const accessToken = envFacebook.FACEBOOK_PAGE_ACCESS_TOKEN;
     const comment = post.commentText;
     const postId = JSON.parse(
       readFileSync(getFacebookPostFilePath(post.eventId), "utf8")
@@ -209,6 +220,39 @@ if (values["list-events"]) {
     console.log("Commented on Facebook:", id);
     return id;
   });
+} else if (values["preview-on-discord"]) {
+  const post = getUpcomingPost();
+  const message = [
+    "```",
+    `${post.text}`,
+    "",
+    `>> ${post.commentText}`,
+    "```",
+  ].join("\n");
+  const messageHash = hash(message);
+  console.log(message);
+  console.log();
+  console.log("Message hash:", messageHash);
+
+  const originalHash = (
+    await axios.get<{ messageHash?: string } | null>(
+      envDiscord.DISCORD_STATE_URL
+    )
+  ).data?.messageHash;
+  console.log("Original hash:", originalHash);
+
+  if (originalHash === messageHash) {
+    console.log("Hashes match. No need to post to Discord.");
+  } else {
+    console.log("Hashes do not match. Posting to Discord...");
+    await axios.post(envDiscord.DISCORD_WEBHOOK_URL, {
+      content: message,
+    });
+    await axios.patch(envDiscord.DISCORD_STATE_URL, {
+      messageHash,
+    });
+    console.log("Done.");
+  }
 } else if (values["capture-url"]) {
   const targetUrl = values["capture-url"];
   await prepareImage(targetUrl, ".data/post.png");

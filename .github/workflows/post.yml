@@ -3,7 +3,7 @@ name: Post
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 4,8,13 * * *"
+    - cron: "24 4,8,13 * * *"
 
 jobs:
   sync:
