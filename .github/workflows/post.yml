@@ -31,6 +31,8 @@ jobs:
       - run: test -f .data/next.id.txt && pnpm cli --comment
         env:
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+      - run: git add state && git diff --cached
+        if: always()
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: always()
         with:
