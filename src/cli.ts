@@ -1,6 +1,6 @@
 import { parseArgs } from "util";
 import axios from "axios";
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import type { Page } from "puppeteer-core";
 import { getEvents, getEvent } from "./calendar";
 import { createHash } from "crypto";
@@ -9,7 +9,8 @@ import { GoogleCalendarItem } from "./types";
 const { values } = parseArgs({
   options: {
     "list-events": { type: "boolean" },
-    "render-event": { type: "string" },
+    "prepare-post": { type: "string" },
+    "prepare-image": { type: "boolean" },
     "capture-url": { type: "string" },
   },
 });
@@ -34,6 +35,21 @@ function shouldSkip(item: GoogleCalendarItem) {
   return false;
 }
 
+async function preparePost(eventId: string) {
+  const event = await getEvent(eventId);
+  const yearAndMonth = (
+    "dateTime" in event.start ? event.start.dateTime : event.start.date
+  ).slice(0, 7);
+  const screenshotUrl = `https://th.techcal.dev/?${new URLSearchParams({
+    month: yearAndMonth,
+    capture: eventId,
+  })}`;
+  return {
+    eventId,
+    screenshotUrl,
+  };
+}
+
 if (values["list-events"]) {
   const calendar = await getEvents();
   const out: {
@@ -56,21 +72,31 @@ if (values["list-events"]) {
   console.table(out.map(({ id, ...x }) => x));
 
   for (const [index, row] of out.entries()) {
-    console.log(`[${index}]\n    pnpm cli --render-event ${row.id}`);
+    console.log(`[${index}]\n    pnpm cli --prepare-post ${row.id}`);
   }
-} else if (values["render-event"]) {
-  const eventId = values["render-event"];
-  const event = await getEvent(eventId);
-  const yearAndMonth = (
-    "dateTime" in event.start ? event.start.dateTime : event.start.date
-  ).slice(0, 7);
-  const screenshotUrl = `https://th.techcal.dev/?${new URLSearchParams({
-    month: yearAndMonth,
-    capture: eventId,
-  })}`;
-  console.log(screenshotUrl);
+} else if (values["prepare-post"]) {
+  const eventId = values["prepare-post"];
+  const post = await preparePost(eventId);
+  console.log(post);
+
+  mkdirSync(".data", { recursive: true });
+  writeFileSync(".data/post.json", JSON.stringify(post, null, 2));
+  console.log(
+    "Post has been prepared. To prepare the post image run:\n    pnpm cli --prepare-image"
+  );
+} else if (values["prepare-image"]) {
+  const post = JSON.parse(readFileSync(".data/post.json", "utf8")) as Awaited<
+    ReturnType<typeof preparePost>
+  >;
+  const outPath = await prepareImage(post.screenshotUrl);
+  console.log(outPath);
 } else if (values["capture-url"]) {
   const targetUrl = values["capture-url"];
+  const outPath = await prepareImage(targetUrl);
+  console.log(outPath);
+}
+
+async function prepareImage(targetUrl: string) {
   const options = { targetUrl };
   const code = `(${async (page: Page, { targetUrl }: typeof options) => {
     await page.setViewport({ width: 1200, height: 1200, deviceScaleFactor: 2 });
@@ -90,5 +116,7 @@ if (values["list-events"]) {
     { timeout: 60000, responseType: "arraybuffer" }
   );
   mkdirSync(".data", { recursive: true });
-  writeFileSync(".data/capture.png", data);
+  const outPath = ".data/post.png";
+  writeFileSync(outPath, data);
+  return outPath;
 }
