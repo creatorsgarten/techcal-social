@@ -1,6 +1,6 @@
 # techcal-social
 
-Post newly-announced events to facebook - under construction!
+This repository hosts an automation workflow that posts upcoming tech events in Thailand to [the Thai Tech Calendar Facebook Page](https://www.facebook.com/th.techcal.dev).
 
 ## How it works
 
