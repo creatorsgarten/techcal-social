@@ -23,7 +23,10 @@ jobs:
       - run: docker compose up -d
       - run: pnpm wait-on http-get://localhost:20279
       - run: pnpm cli --list-events
-      - run: touch state/test-gha.txt
+      - run: test -f .data/next.id.txt && pnpm cli --prepare-post
+      - run: test -f .data/next.id.txt && pnpm cli --prepare-image
+      - run: test -f .data/next.id.txt && pnpm cli --post
+      - run: test -f .data/next.id.txt && pnpm cli --comment
       - uses: stefanzweifel/git-auto-commit-action@v4
         if: always()
         with:
