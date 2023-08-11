@@ -111,19 +111,25 @@ if (values["list-events"]) {
   out.sort((a, b) => {
     return a.startDate.localeCompare(b.startDate);
   });
-  console.table(out.map(({ id, ...x }) => x));
 
   console.log();
   for (const [index, row] of out.entries()) {
     console.log(`[${index}]\n    pnpm cli --prepare-post --event-id ${row.id}`);
   }
 
+  console.table(out.map(({ id, ...x }) => x));
+
   console.log();
   mkdirSync(".data", { recursive: true });
   for (const [index, row] of out.entries()) {
     if (row.skip) continue;
-    console.log("Next event id:", row.id);
     writeFileSync(".data/next.id.txt", row.id);
+    console.log("The next event to post has been selected:");
+    console.log("    title:", row.summary);
+    console.log("    id:", row.id);
+    console.log();
+    console.log('Its ID has been written to ".data/next.id.txt"');
+    console.log();
     console.log("You can run the following command to prepare the post:");
     console.log(`    pnpm cli --prepare-post`);
     break;
