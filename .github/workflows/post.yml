@@ -1,0 +1,34 @@
+name: Post
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 3,6,9,12,15 * * *'
+
+jobs:
+  sync:
+    name: Synchronize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: pnpm
+        uses: pnpm/action-setup@v2
+      - name: node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: pnpm
+      - run: pnpm install
+      - run: docker compose up -d
+      - run: pnpm wait-on http-get://localhost:20279
+      - run: pnpm cli --list-events
+      - run: touch state/test-gha.txt
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: always()
+        with:
+          commit_message: Update state file
+          commit_user_name: "dtinth-bot"
+          commit_user_email: "dtinth-bot@users.noreply.github.com"
+permissions:
+  contents: write

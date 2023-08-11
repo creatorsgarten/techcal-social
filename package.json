@@ -12,9 +12,11 @@
     "@tsconfig/node18": "^18.2.0",
     "@types/node": "18.x",
     "puppeteer-core": "^21.0.3",
-    "vitest": "^0.34.1"
+    "vitest": "^0.34.1",
+    "wait-on": "^7.0.1"
   },
   "scripts": {
     "cli": "tsx src/cli.ts"
-  }
+  },
+  "packageManager": "pnpm@8.6.9"
 }
