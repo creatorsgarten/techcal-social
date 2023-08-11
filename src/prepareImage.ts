@@ -2,7 +2,7 @@ import axios from "axios";
 import { mkdirSync, writeFileSync } from "fs";
 import type { Page } from "puppeteer-core";
 
-export async function prepareImage(targetUrl: string) {
+export async function prepareImage(targetUrl: string, outPath: string) {
   const options = { targetUrl };
   const code = `(${async (page: Page, { targetUrl }: typeof options) => {
     await page.setViewport({ width: 1200, height: 1200, deviceScaleFactor: 2 });
@@ -22,7 +22,5 @@ export async function prepareImage(targetUrl: string) {
     { timeout: 60000, responseType: "arraybuffer" }
   );
   mkdirSync(".data", { recursive: true });
-  const outPath = ".data/post.png";
   writeFileSync(outPath, data);
-  return outPath;
 }

@@ -1,8 +1,10 @@
 import { getEvent } from "./calendar";
 import { getExcerpt } from "./getExcerpt";
+import { hash } from "./hash";
 
 export async function preparePost(eventId: string) {
   const event = await getEvent(eventId);
+  const idHash = hash(eventId);
   console.log("Raw description:\n" + JSON.stringify(event.description));
   const yearAndMonth = (
     "dateTime" in event.start ? event.start.dateTime : event.start.date
