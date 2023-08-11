@@ -1,0 +1,13 @@
+{
+	"type": "module",
+	"dependencies": {
+		"@(-.-)/env": "^0.3.2",
+		"axios": "^1.4.0",
+		"tsx": "^3.12.7",
+		"zod": "^3.21.4"
+	},
+	"devDependencies": {
+		"@tsconfig/node18": "^18.2.0",
+		"@types/node": "18.x"
+	}
+}

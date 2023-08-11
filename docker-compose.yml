@@ -1,0 +1,5 @@
+services:
+  pptraas:
+    image: ghcr.io/dtinth/pptraas:latest
+    ports:
+      - 20279:20279
