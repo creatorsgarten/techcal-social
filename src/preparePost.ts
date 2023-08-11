@@ -1,4 +1,5 @@
 import { getEvent } from "./calendar";
+import { getExcerpt } from "./getExcerpt";
 
 export async function preparePost(eventId: string) {
   const event = await getEvent(eventId);
@@ -11,6 +12,11 @@ export async function preparePost(eventId: string) {
     capture: eventId,
   })}`;
   const lines = [`🗓️ ${event.summary}`];
+  const excerpt = getExcerpt(event.description || "");
+  if (excerpt) {
+    lines.push("", `${excerpt}`);
+  }
+  lines.push("", `🔗 More info - https://th.techcal.dev/event/${eventId}`);
   const text = lines.join("\n");
   return {
     eventId,
