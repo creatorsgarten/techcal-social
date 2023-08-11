@@ -1,0 +1,14 @@
+event 08c03gvh0uirbkdn9rat09tp6k
+2023-08-11T17:20:32.930Z - started prepare-post
+2023-08-11T17:20:33.155Z - finished prepare-post
+2023-08-11T17:20:34.349Z - started prepare-image
+2023-08-11T17:20:41.210Z - finished prepare-image
+2023-08-11T17:20:42.412Z - started post
+2023-08-11T17:20:42.415Z - error:
+EnvError: env.FACEBOOK_PAGE_ACCESS_TOKEN: Required (invalid_type)
+    at getResult (/home/runner/work/techcal-social/techcal-social/node_modules/.pnpm/@@_-.-)+env+0.3.2_zod@3.21.4/node_modules/@(-.-)/env/dist/index.js:36:17)
+    at Object.get (/home/runner/work/techcal-social/techcal-social/node_modules/.pnpm/@@_-.-)+env+0.3.2_zod@3.21.4/node_modules/@(-.-)/env/dist/index.js:63:18)
+    at <anonymous> (/home/runner/work/techcal-social/techcal-social/src/cli.ts:161:29)
+    at updateState (/home/runner/work/techcal-social/techcal-social/src/cli.ts:84:26)
+    at <anonymous> (/home/runner/work/techcal-social/techcal-social/src/cli.ts:160:9)
+    at ModuleJob.run (node:internal/modules/esm/module_job:194:25)
