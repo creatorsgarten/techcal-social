@@ -16,11 +16,14 @@ export async function preparePost(eventId: string) {
   if (excerpt) {
     lines.push("", `${excerpt}`);
   }
-  lines.push("", `🔗 More info - https://th.techcal.dev/event/${eventId}`);
+  lines.push("", `🔗 See link in the comment for more details.`);
   const text = lines.join("\n");
+  const detailsUrl = `https://th.techcal.dev/event/${eventId}`;
+  const commentText = `🔗 Details: ${detailsUrl}`;
   return {
     eventId,
     text,
     screenshotUrl,
+    commentText,
   };
 }
