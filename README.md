@@ -1,6 +1,6 @@
 # techcal-social
 
-This repository hosts an automation workflow that posts upcoming tech events in Thailand to [the Thai Tech Calendar Facebook Page](https://www.facebook.com/th.techcal.dev).
+This repository hosts an automation workflow that posts [upcoming tech events in Thailand](https://th.techcal.dev/) to [the Thai Tech Calendar Facebook Page](https://www.facebook.com/th.techcal.dev).
 
 ## How it works
 
