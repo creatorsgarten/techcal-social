@@ -23,12 +23,12 @@ jobs:
       - run: docker compose up -d
       - run: pnpm wait-on http-get://localhost:20279
       - run: pnpm cli --list-events
-      - run: test -f .data/next.id.txt && pnpm cli --prepare-post
-      - run: test -f .data/next.id.txt && pnpm cli --prepare-image
-      - run: test -f .data/next.id.txt && pnpm cli --post
+      - run: if test -f .data/next.id.txt; then pnpm cli --prepare-post; else echo Nothing to do; fi
+      - run: if test -f .data/next.id.txt; then pnpm cli --prepare-image; else echo Nothing to do; fi
+      - run: if test -f .data/next.id.txt; then pnpm cli --post; else echo Nothing to do; fi
         env:
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
-      - run: test -f .data/next.id.txt && pnpm cli --comment
+      - run: if test -f .data/next.id.txt; then pnpm cli --comment; else echo Nothing to do; fi
         env:
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
       - run: git add state && git diff --cached
