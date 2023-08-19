@@ -21,8 +21,8 @@ jobs:
           cache: pnpm
       - run: pnpm install
       - run: pnpm cli --list-events
-      - run: test -f .data/next.id.txt && pnpm cli --prepare-post
-      - run: test -f .data/next.id.txt && pnpm cli --preview-on-discord
+      - run: if test -f .data/next.id.txt; then pnpm cli --prepare-post; else echo Nothing to do; fi
+      - run: if test -f .data/next.id.txt; then pnpm cli --preview-on-discord; else echo Nothing to do; fi
         env:
           DISCORD_STATE_URL: ${{ secrets.DISCORD_STATE_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
