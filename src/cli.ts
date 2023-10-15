@@ -50,7 +50,7 @@ const { values } = parseArgs({
   },
 });
 
-function shouldSkip(item: GoogleCalendarItem) {
+function shouldSkip(item: GoogleCalendarItem, startDate: string) {
   const lowercase = item.summary.toLowerCase();
 
   // skip if event is tentative or not finalized
@@ -63,6 +63,11 @@ function shouldSkip(item: GoogleCalendarItem) {
   // skip if too recent (updated within 16 hours)
   if (Date.now() - Date.parse(item.updated) < 16 * 60 * 60 * 1000) {
     return "too_recently_updated";
+  }
+
+  // skip if event already past start date
+  if (new Date().toISOString().slice(0, 10) > startDate) {
+    return "already_started";
   }
 
   // skip if there is already an attempt to post this event
@@ -113,10 +118,14 @@ if (values["list-events"]) {
   }[] = [];
   for (const event of calendar.items) {
     const { id, summary } = event;
+    if (!event.start) {
+      console.log("Event has no start date:", event);
+      continue;
+    }
     const startDate = (
       "dateTime" in event.start ? event.start.dateTime : event.start.date
     ).slice(0, 10);
-    const skip = shouldSkip(event);
+    const skip = shouldSkip(event, startDate);
     out.push({ id, summary, startDate, skip });
   }
   out.sort((a, b) => {
