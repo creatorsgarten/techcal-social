@@ -1,0 +1,15 @@
+event _6l23ada388p3gb9l70pk2b9k8gq44ba18d23gb9g88pkac9o60oj8gi56g
+2024-09-03T13:35:53.106Z - started prepare-post
+2024-09-03T13:35:53.391Z - finished prepare-post
+2024-09-03T13:35:54.263Z - started prepare-image
+2024-09-03T13:35:56.092Z - finished prepare-image
+2024-09-03T13:35:56.982Z - started post
+2024-09-03T13:36:01.938Z - 581775420841069
+2024-09-03T13:36:02.795Z - started comment
+2024-09-03T13:36:33.125Z - error:
+AxiosError: Request failed with status code 500
+    at settle (file:///home/runner/work/techcal-social/techcal-social/node_modules/.pnpm/axios@1.4.0/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (file:///home/runner/work/techcal-social/techcal-social/node_modules/.pnpm/axios@1.4.0/node_modules/axios/lib/adapters/http.js:570:11)
+    at IncomingMessage.emit (node:events:529:35)
+    at endReadableNT (node:internal/streams/readable:1400:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
